@@ -1,3 +1,4 @@
+#!/bin/python3
 from xdrlib import raise_conversion_error
 
 print("**********************************************************************************")
@@ -20,7 +21,7 @@ import calc_bit_and_evalues as cbe
 import sys
 import pandas as pd
 import os
-From Bio import SeqIO
+from Bio import SeqIO
 import re
 
 #These are used for timing of various events
@@ -121,8 +122,8 @@ def extend_diagonal(pos_s0_s1,s0,s1):
 
 #Performs the core part of the BLAST search
 def process_blast(myline_database):
-    #word_size =int(programme_settings.settings["BLAST"]["word_size"]) #word size for searching
-    #max_extension_length =int(programme_settings.settings["BLAST"]["max_extension_length"])
+    word_size =int(programme_settings.settings["BLAST"]["word_size"]) #word size for searching
+    max_extension_length =int(programme_settings.settings["BLAST"]["max_extension_length"])
     count_matches =0
 
     global query_sequence
@@ -345,26 +346,35 @@ def init_print_timer():
     aligner_timer_secs["Fastatime"] =0
     aligner_timer_secs["Elapsedtime"] = 0
 
+count=0
+check=0
 aminoacidlist=['A','R','N','D','C','E','Q','G','H','I','L','K','M','F','P','S','T','W','Y','V','B','Z']
-if sys.argv(1) is not Null and type(sys.argv(1))=="<class \'str\'>":
-    arg1=sys.argv(1)
-    if arg1 == "-h":
-        print("USAGE: blast101_run [Sequence / Path to FASTA file] [Database file]")
-        exit()
-    elif os.path.isfile(arg1) and re.match(r".fasta$",f"{arg1}"):
-        with open(f"{arg1}","r") as fasta:
-            for record in SeqIO.parse(fasta, "fasta"):
-                query_sequence = str(record.seq)
-                blast101_run()
-    elif arg1[0] in aminoacidlist and arg[-1] in aminoacidlist:
-        for x in range(len(arg1)):
-            if arg1[x].upper() in aminoacidlist:
-                count+=1
-        if count==leng(arg1):
+if len(sys.argv)>2:
+    print(sys.argv[1])
+    print(sys.argv[2])
+    if sys.argv[1] is not None and isinstance(sys.argv[1],str):
+        arg1=sys.argv[1]
+        if arg1 == "-h":
+            print("USAGE: blast101_run [Sequence / Path to FASTA file] [Database file]")
+            exit()
+        elif os.path.isfile(arg1) and re.match(r".fasta$",f"{arg1}"):
+            with open(f"{arg1}","r") as fasta:
+                for record in SeqIO.parse(fasta, "fasta"):
+                    query_sequence = str(record.seq)
+                    check=1
+        elif arg1[0] in aminoacidlist and arg1[-1] in aminoacidlist:
+            for x in range(len(arg1)):
+                if arg1[x].upper() in aminoacidlist:
+                    count+=1
+            if count==len(arg1):
+                query_sequence=arg1.upper()
+                check=1
+        if os.path.isfile(sys.argv[2]) and check==1:
             blast101_run()
-
-
+            arg2=sys.argv[2]
+        else:
+            print("ERROR: malformed statement.\nUSAGE: blast101_run [Sequence / Path to FASTA file] [Database file]")
+            exit()
 else:
-    print("ERROR: malformed statement.")
-    print("USAGE: blast101_run [Sequence / Path to FASTA file] [Database file]")
+    print("ERROR: malformed statement.\nUSAGE: blast101_run [Sequence / Path to FASTA file] [Database file]")
     exit()
